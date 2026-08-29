@@ -4,7 +4,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 if (!API_URL) {
   throw new Error(
-    "VITE_API_URL is not configured. Please check your frontend .env file."
+    "VITE_API_URL is not configured. Please check your frontend .env file.",
   );
 }
 
@@ -13,7 +13,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 10000,
+  timeout: 30000,
 });
 
 api.interceptors.request.use(
@@ -28,7 +28,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 api.interceptors.response.use(
@@ -52,7 +52,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

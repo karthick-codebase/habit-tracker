@@ -24,11 +24,7 @@ const formatDateKey = (year, month, day) =>
 const getTodayKey = () => {
   const today = new Date();
 
-  return formatDateKey(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate()
-  );
+  return formatDateKey(today.getFullYear(), today.getMonth(), today.getDate());
 };
 
 const getMonthLabel = (date) =>
@@ -37,11 +33,7 @@ const getMonthLabel = (date) =>
     year: "numeric",
   }).format(date);
 
-const HabitHistoryModal = ({
-  isOpen,
-  habit,
-  onClose,
-}) => {
+const HabitHistoryModal = ({ isOpen, habit, onClose }) => {
   const [checkIns, setCheckIns] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -49,11 +41,7 @@ const HabitHistoryModal = ({
   const [currentMonth, setCurrentMonth] = useState(() => {
     const today = new Date();
 
-    return new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      1
-    );
+    return new Date(today.getFullYear(), today.getMonth(), 1);
   });
 
   /*
@@ -67,13 +55,7 @@ const HabitHistoryModal = ({
 
     const today = new Date();
 
-    setCurrentMonth(
-      new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        1
-      )
-    );
+    setCurrentMonth(new Date(today.getFullYear(), today.getMonth(), 1));
   }, [isOpen, habit?.id]);
 
   /*
@@ -91,28 +73,21 @@ const HabitHistoryModal = ({
         setIsLoading(true);
         setErrorMessage("");
 
-        const response = await api.get(
-          `/habits/${habit.id}/check-ins`
-        );
+        const response = await api.get(`/habits/${habit.id}/check-ins`);
 
         if (!response.data?.success) {
           throw new Error(
-            response.data?.message ||
-              "Unable to retrieve check-in history."
+            response.data?.message || "Unable to retrieve check-in history.",
           );
         }
 
-        const records =
-          response.data?.data?.checkIns || [];
+        const records = response.data?.data?.checkIns || [];
 
         if (isMounted) {
           setCheckIns(records);
         }
       } catch (error) {
-        console.error(
-          "Get habit history error:",
-          error
-        );
+        console.error("Get habit history error:", error);
 
         if (!isMounted) {
           return;
@@ -153,16 +128,10 @@ const HabitHistoryModal = ({
       }
     };
 
-    document.addEventListener(
-      "keydown",
-      handleEscape
-    );
+    document.addEventListener("keydown", handleEscape);
 
     return () => {
-      document.removeEventListener(
-        "keydown",
-        handleEscape
-      );
+      document.removeEventListener("keydown", handleEscape);
     };
   }, [isOpen, onClose]);
 
@@ -175,9 +144,7 @@ const HabitHistoryModal = ({
    */
   const checkInDates = useMemo(() => {
     return new Set(
-      checkIns
-        .map((checkIn) => checkIn.localDate)
-        .filter(Boolean)
+      checkIns.map((checkIn) => checkIn.localDate).filter(Boolean),
     );
   }, [checkIns]);
 
@@ -188,33 +155,21 @@ const HabitHistoryModal = ({
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
 
-    const firstDay = new Date(
-      year,
-      month,
-      1
-    ).getDay();
+    const firstDay = new Date(year, month, 1).getDay();
 
-    const daysInMonth = new Date(
-      year,
-      month + 1,
-      0
-    ).getDate();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     const previousMonthDays = [];
 
     for (let i = firstDay - 1; i >= 0; i -= 1) {
-      const date = new Date(
-        year,
-        month,
-        -i
-      );
+      const date = new Date(year, month, -i);
 
       previousMonthDays.push({
         day: date.getDate(),
         dateKey: formatDateKey(
           date.getFullYear(),
           date.getMonth(),
-          date.getDate()
+          date.getDate(),
         ),
         isCurrentMonth: false,
       });
@@ -225,11 +180,7 @@ const HabitHistoryModal = ({
     for (let day = 1; day <= daysInMonth; day += 1) {
       currentMonthDays.push({
         day,
-        dateKey: formatDateKey(
-          year,
-          month,
-          day
-        ),
+        dateKey: formatDateKey(year, month, day),
         isCurrentMonth: true,
       });
     }
@@ -238,42 +189,27 @@ const HabitHistoryModal = ({
      * Fill the final row so the calendar always has
      * complete weeks.
      */
-    const totalCells =
-      previousMonthDays.length +
-      currentMonthDays.length;
+    const totalCells = previousMonthDays.length + currentMonthDays.length;
 
-    const remainingCells =
-      (7 - (totalCells % 7)) % 7;
+    const remainingCells = (7 - (totalCells % 7)) % 7;
 
     const nextMonthDays = [];
 
-    for (
-      let day = 1;
-      day <= remainingCells;
-      day += 1
-    ) {
-      const date = new Date(
-        year,
-        month + 1,
-        day
-      );
+    for (let day = 1; day <= remainingCells; day += 1) {
+      const date = new Date(year, month + 1, day);
 
       nextMonthDays.push({
         day: date.getDate(),
         dateKey: formatDateKey(
           date.getFullYear(),
           date.getMonth(),
-          date.getDate()
+          date.getDate(),
         ),
         isCurrentMonth: false,
       });
     }
 
-    return [
-      ...previousMonthDays,
-      ...currentMonthDays,
-      ...nextMonthDays,
-    ];
+    return [...previousMonthDays, ...currentMonthDays, ...nextMonthDays];
   }, [currentMonth]);
 
   const todayKey = getTodayKey();
@@ -285,27 +221,20 @@ const HabitHistoryModal = ({
     const today = new Date();
 
     const currentYear = currentMonth.getFullYear();
-    const currentMonthIndex =
-      currentMonth.getMonth();
+    const currentMonthIndex = currentMonth.getMonth();
 
     const todayYear = today.getFullYear();
     const todayMonth = today.getMonth();
 
     return (
       currentYear < todayYear ||
-      (currentYear === todayYear &&
-        currentMonthIndex < todayMonth)
+      (currentYear === todayYear && currentMonthIndex < todayMonth)
     );
   }, [currentMonth]);
 
   const handlePreviousMonth = () => {
     setCurrentMonth(
-      (current) =>
-        new Date(
-          current.getFullYear(),
-          current.getMonth() - 1,
-          1
-        )
+      (current) => new Date(current.getFullYear(), current.getMonth() - 1, 1),
     );
   };
 
@@ -315,12 +244,7 @@ const HabitHistoryModal = ({
     }
 
     setCurrentMonth(
-      (current) =>
-        new Date(
-          current.getFullYear(),
-          current.getMonth() + 1,
-          1
-        )
+      (current) => new Date(current.getFullYear(), current.getMonth() + 1, 1),
     );
   };
 
@@ -338,15 +262,9 @@ const HabitHistoryModal = ({
         return false;
       }
 
-      const [checkYear, checkMonth] =
-        checkIn.localDate
-          .split("-")
-          .map(Number);
+      const [checkYear, checkMonth] = checkIn.localDate.split("-").map(Number);
 
-      return (
-        checkYear === year &&
-        checkMonth === month + 1
-      );
+      return checkYear === year && checkMonth === month + 1;
     }).length;
   }, [checkIns, currentMonth]);
 
@@ -390,9 +308,7 @@ const HabitHistoryModal = ({
               duration: 0.25,
               ease: "easeOut",
             }}
-            onMouseDown={(event) =>
-              event.stopPropagation()
-            }
+            onMouseDown={(event) => event.stopPropagation()}
             className="relative my-6 w-full max-w-3xl overflow-hidden rounded-3xl border border-white/[0.09] bg-[#07101f] shadow-2xl shadow-black/60"
           >
             {/* Ambient effects */}
@@ -411,10 +327,7 @@ const HabitHistoryModal = ({
               <div className="flex items-start justify-between gap-4">
                 <div className="flex min-w-0 items-center gap-3">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-indigo-400/15 bg-indigo-500/10">
-                    <FiCalendar
-                      size={20}
-                      className="text-indigo-300"
-                    />
+                    <FiCalendar size={20} className="text-indigo-300" />
                   </div>
 
                   <div className="min-w-0">
@@ -424,7 +337,7 @@ const HabitHistoryModal = ({
 
                     <h2
                       id="habit-history-title"
-                      className="mt-1 truncate text-lg font-semibold text-white"
+                      className="habit-name-display mt-1 truncate text-lg font-semibold text-white"
                     >
                       {habit.name}
                     </h2>
@@ -481,9 +394,7 @@ const HabitHistoryModal = ({
                 <p className="mt-1 text-lg font-semibold text-slate-200">
                   {habit.currentStreak || 0}{" "}
                   <span className="text-xs font-normal text-slate-600">
-                    {habit.currentStreak === 1
-                      ? "day"
-                      : "days"}
+                    {habit.currentStreak === 1 ? "day" : "days"}
                   </span>
                 </p>
               </div>
@@ -527,16 +438,12 @@ const HabitHistoryModal = ({
               <div className="mb-5 flex flex-wrap justify-center gap-x-5 gap-y-2">
                 <div className="flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                  <span className="text-[10px] text-slate-600">
-                    Completed
-                  </span>
+                  <span className="text-[10px] text-slate-600">Completed</span>
                 </div>
 
                 <div className="flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full border border-indigo-400/60" />
-                  <span className="text-[10px] text-slate-600">
-                    Today
-                  </span>
+                  <span className="text-[10px] text-slate-600">Today</span>
                 </div>
 
                 <div className="flex items-center gap-1.5">
@@ -555,19 +462,14 @@ const HabitHistoryModal = ({
                       className="animate-spin text-indigo-400"
                     />
 
-                    <p className="text-xs text-slate-600">
-                      Loading history...
-                    </p>
+                    <p className="text-xs text-slate-600">Loading history...</p>
                   </div>
                 </div>
               ) : errorMessage ? (
                 <div className="flex min-h-[320px] items-center justify-center">
                   <div className="max-w-sm text-center">
                     <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl border border-red-400/10 bg-red-400/5">
-                      <FiCalendar
-                        size={18}
-                        className="text-red-400"
-                      />
+                      <FiCalendar size={18} className="text-red-400" />
                     </div>
 
                     <p className="mt-4 text-sm font-medium text-slate-300">
@@ -610,18 +512,11 @@ const HabitHistoryModal = ({
                     className="grid grid-cols-7 gap-1.5 sm:gap-2"
                   >
                     {calendarDays.map((calendarDay) => {
-                      const isCompleted =
-                        checkInDates.has(
-                          calendarDay.dateKey
-                        );
+                      const isCompleted = checkInDates.has(calendarDay.dateKey);
 
-                      const isToday =
-                        calendarDay.dateKey ===
-                        todayKey;
+                      const isToday = calendarDay.dateKey === todayKey;
 
-                      const isFuture =
-                        calendarDay.dateKey >
-                        todayKey;
+                      const isFuture = calendarDay.dateKey > todayKey;
 
                       return (
                         <div
@@ -630,12 +525,12 @@ const HabitHistoryModal = ({
                             !calendarDay.isCurrentMonth
                               ? "border-transparent text-slate-800"
                               : isCompleted
-                              ? "border-emerald-400/15 bg-emerald-400/10 text-emerald-300"
-                              : isToday
-                              ? "border-indigo-400/40 bg-indigo-500/5 text-indigo-300"
-                              : isFuture
-                              ? "border-transparent bg-white/[0.01] text-slate-800"
-                              : "border-white/[0.045] bg-white/[0.015] text-slate-600"
+                                ? "border-emerald-400/15 bg-emerald-400/10 text-emerald-300"
+                                : isToday
+                                  ? "border-indigo-400/40 bg-indigo-500/5 text-indigo-300"
+                                  : isFuture
+                                    ? "border-transparent bg-white/[0.01] text-slate-800"
+                                    : "border-white/[0.045] bg-white/[0.015] text-slate-600"
                           }`}
                           title={
                             calendarDay.isCurrentMonth
@@ -645,18 +540,15 @@ const HabitHistoryModal = ({
                         >
                           <span
                             className={`text-xs font-medium ${
-                              !calendarDay.isCurrentMonth
-                                ? "opacity-40"
-                                : ""
+                              !calendarDay.isCurrentMonth ? "opacity-40" : ""
                             }`}
                           >
                             {calendarDay.day}
                           </span>
 
-                          {isCompleted &&
-                            calendarDay.isCurrentMonth && (
-                              <span className="absolute bottom-1 h-1 w-1 rounded-full bg-emerald-400 sm:bottom-1.5" />
-                            )}
+                          {isCompleted && calendarDay.isCurrentMonth && (
+                            <span className="absolute bottom-1 h-1 w-1 rounded-full bg-emerald-400 sm:bottom-1.5" />
+                          )}
 
                           {isToday &&
                             !isCompleted &&
@@ -664,12 +556,11 @@ const HabitHistoryModal = ({
                               <span className="absolute bottom-1 h-1 w-1 rounded-full bg-indigo-400 sm:bottom-1.5" />
                             )}
 
-                          {isFuture &&
-                            calendarDay.isCurrentMonth && (
-                              <span className="absolute bottom-1 text-[7px] text-slate-800">
-                                •
-                              </span>
-                            )}
+                          {isFuture && calendarDay.isCurrentMonth && (
+                            <span className="absolute bottom-1 text-[7px] text-slate-800">
+                              •
+                            </span>
+                          )}
                         </div>
                       );
                     })}
@@ -682,8 +573,7 @@ const HabitHistoryModal = ({
             <div className="relative border-t border-white/[0.06] px-5 py-4 sm:px-7">
               <div className="flex items-center justify-center gap-2 text-[10px] text-slate-700">
                 <FiClock size={12} />
-                Check-ins are recorded using your account
-                timezone.
+                Check-ins are recorded using your account timezone.
               </div>
             </div>
           </motion.div>

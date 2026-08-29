@@ -1,6 +1,12 @@
 const { z } = require("zod");
 const { Habit } = require("../models");
 
+const normalizeHabitName = (value = "") =>
+  value
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
 const createHabitSchema = z.object({
   name: z
     .string()
@@ -32,12 +38,9 @@ const updateHabitSchema = z
       .optional()
       .nullable(),
   })
-  .refine(
-    (data) => data.name !== undefined || data.description !== undefined,
-    {
-      message: "At least one field is required to update the habit",
-    }
-  );
+  .refine((data) => data.name !== undefined || data.description !== undefined, {
+    message: "At least one field is required to update the habit",
+  });
 
 /**
  * POST /api/habits
@@ -59,10 +62,11 @@ const createHabit = async (req, res) => {
     }
 
     const { name, description } = result.data;
+    const normalizedName = normalizeHabitName(name);
 
     const habit = await Habit.create({
       userId: req.userId,
-      name,
+      name: normalizedName,
       description: description ?? null,
     });
 
@@ -100,13 +104,7 @@ const getHabits = async (req, res) => {
         userId: req.userId,
       },
       order: [["createdAt", "DESC"]],
-      attributes: [
-        "id",
-        "name",
-        "description",
-        "createdAt",
-        "updatedAt",
-      ],
+      attributes: ["id", "name", "description", "createdAt", "updatedAt"],
     });
 
     return res.status(200).json({
@@ -140,13 +138,7 @@ const getHabitById = async (req, res) => {
         id,
         userId: req.userId,
       },
-      attributes: [
-        "id",
-        "name",
-        "description",
-        "createdAt",
-        "updatedAt",
-      ],
+      attributes: ["id", "name", "description", "createdAt", "updatedAt"],
     });
 
     if (!habit) {
@@ -211,7 +203,7 @@ const updateHabit = async (req, res) => {
     const { name, description } = result.data;
 
     if (name !== undefined) {
-      habit.name = name;
+      habit.name = normalizeHabitName(name);
     }
 
     if (description !== undefined) {

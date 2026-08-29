@@ -13,12 +13,13 @@ import { toast } from "react-hot-toast";
 
 import api from "../../utils/api";
 
-const EditHabitModal = ({
-  isOpen,
-  habit,
-  onClose,
-  onUpdated,
-}) => {
+const normalizeHabitName = (value = "") =>
+  value
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
+const EditHabitModal = ({ isOpen, habit, onClose, onUpdated }) => {
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -69,10 +70,7 @@ const EditHabitModal = ({
     document.addEventListener("keydown", handleEscape);
 
     return () => {
-      document.removeEventListener(
-        "keydown",
-        handleEscape
-      );
+      document.removeEventListener("keydown", handleEscape);
     };
   }, [isOpen, isSubmitting, onClose]);
 
@@ -113,13 +111,11 @@ const EditHabitModal = ({
     if (!name) {
       nextErrors.name = "Habit name is required.";
     } else if (name.length > 100) {
-      nextErrors.name =
-        "Habit name must not exceed 100 characters.";
+      nextErrors.name = "Habit name must not exceed 100 characters.";
     }
 
     if (description.length > 1000) {
-      nextErrors.description =
-        "Description must not exceed 1000 characters.";
+      nextErrors.description = "Description must not exceed 1000 characters.";
     }
 
     setErrors(nextErrors);
@@ -142,29 +138,19 @@ const EditHabitModal = ({
       setIsSubmitting(true);
 
       const payload = {
-        name: form.name.trim(),
+        name: normalizeHabitName(form.name),
         description: form.description.trim() || null,
       };
 
-      const response = await api.put(
-        `/habits/${habit.id}`,
-        payload
-      );
+      const response = await api.put(`/habits/${habit.id}`, payload);
 
       if (!response.data?.success) {
-        throw new Error(
-          response.data?.message ||
-            "Unable to update habit."
-        );
+        throw new Error(response.data?.message || "Unable to update habit.");
       }
 
-      const updatedHabit =
-        response.data?.data?.habit;
+      const updatedHabit = response.data?.data?.habit;
 
-      toast.success(
-        response.data.message ||
-          "Habit updated successfully."
-      );
+      toast.success(response.data.message || "Habit updated successfully.");
 
       setErrors({});
 
@@ -174,10 +160,7 @@ const EditHabitModal = ({
         await onUpdated(updatedHabit);
       }
     } catch (error) {
-      console.error(
-        "Update habit error:",
-        error
-      );
+      console.error("Update habit error:", error);
 
       /*
        * Normally the axios interceptor handles
@@ -185,8 +168,7 @@ const EditHabitModal = ({
        */
       if (error.response?.status === 401) {
         setErrors({
-          form:
-            "Your session has expired. Please login again.",
+          form: "Your session has expired. Please login again.",
         });
 
         return;
@@ -196,16 +178,14 @@ const EditHabitModal = ({
        * Map backend validation errors to
        * individual fields.
        */
-      const serverErrors =
-        error.response?.data?.errors;
+      const serverErrors = error.response?.data?.errors;
 
       if (Array.isArray(serverErrors)) {
         const mappedErrors = {};
 
         serverErrors.forEach((item) => {
           if (item.field) {
-            mappedErrors[item.field] =
-              item.message;
+            mappedErrors[item.field] = item.message;
           }
         });
 
@@ -230,10 +210,7 @@ const EditHabitModal = ({
   };
 
   const handleBackdropClick = (event) => {
-    if (
-      event.target === event.currentTarget &&
-      !isSubmitting
-    ) {
+    if (event.target === event.currentTarget && !isSubmitting) {
       onClose();
     }
   };
@@ -272,9 +249,7 @@ const EditHabitModal = ({
               duration: 0.25,
               ease: "easeOut",
             }}
-            onMouseDown={(event) =>
-              event.stopPropagation()
-            }
+            onMouseDown={(event) => event.stopPropagation()}
             className="relative my-8 w-full max-w-lg overflow-hidden rounded-3xl border border-white/[0.09] bg-[#07101f] shadow-2xl shadow-black/50"
           >
             {/* Ambient glow */}
@@ -293,10 +268,7 @@ const EditHabitModal = ({
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-indigo-400/15 bg-indigo-500/10">
-                    <FiTarget
-                      size={20}
-                      className="text-indigo-300"
-                    />
+                    <FiTarget size={20} className="text-indigo-300" />
                   </div>
 
                   <div>
@@ -308,8 +280,7 @@ const EditHabitModal = ({
                     </h2>
 
                     <p className="mt-1 text-xs text-slate-500">
-                      Refine your habit and keep moving
-                      forward.
+                      Refine your habit and keep moving forward.
                     </p>
                   </div>
                 </div>
@@ -351,10 +322,7 @@ const EditHabitModal = ({
                     className="mb-5 overflow-hidden"
                   >
                     <div className="flex gap-3 rounded-xl border border-red-400/10 bg-red-400/[0.04] p-3.5 text-sm text-red-300">
-                      <FiAlertCircle
-                        className="mt-0.5 shrink-0"
-                        size={17}
-                      />
+                      <FiAlertCircle className="mt-0.5 shrink-0" size={17} />
 
                       <span>{errors.form}</span>
                     </div>
@@ -370,9 +338,7 @@ const EditHabitModal = ({
                     className="text-sm font-medium text-slate-300"
                   >
                     Habit name
-                    <span className="ml-1 text-red-400">
-                      *
-                    </span>
+                    <span className="ml-1 text-red-400">*</span>
                   </label>
 
                   <span className="text-[11px] text-slate-600">
@@ -483,10 +449,7 @@ const EditHabitModal = ({
                 >
                   {isSubmitting ? (
                     <>
-                      <FiLoader
-                        size={16}
-                        className="animate-spin"
-                      />
+                      <FiLoader size={16} className="animate-spin" />
                       Saving...
                     </>
                   ) : (

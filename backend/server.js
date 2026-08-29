@@ -7,6 +7,8 @@ const authRoutes = require("./routes/authRoutes");
 const authenticate = require("./middleware/authMiddleware");
 const habitRoutes = require("./routes/habitRoutes");
 const checkInRoutes = require("./routes/checkInRoutes");
+const userRoutes = require("./routes/userRoutes");
+const analyticsRoutes = require("./routes/analyticsRoutes");
 
 const app = express();
 
@@ -34,6 +36,8 @@ app.get("/api/auth", authenticate, (req, res) => {
 });
 app.use("/api/habits", habitRoutes);
 app.use("/api/habits", checkInRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 // Basic test route
 app.get("/", (req, res) => {

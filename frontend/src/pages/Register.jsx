@@ -16,12 +16,13 @@ import {
 import { toast } from "react-hot-toast";
 
 import api from "../utils/api";
+import { getDefaultTimezone, POPULAR_TIMEZONES } from "../utils/timezones";
 
 const initialForm = {
   email: "",
   password: "",
   confirmPassword: "",
-  timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
+  timezone: getDefaultTimezone(),
 };
 
 const validateEmail = (email) => {
@@ -76,14 +77,13 @@ const Register = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const passwordStrength = useMemo(
     () => getPasswordStrength(formData.password),
-    [formData.password]
+    [formData.password],
   );
 
   const handleChange = (event) => {
@@ -117,26 +117,21 @@ const Register = () => {
     } else if (!validateEmail(email)) {
       nextErrors.email = "Enter a valid email address.";
     } else if (email.length > 255) {
-      nextErrors.email =
-        "Email must not exceed 255 characters.";
+      nextErrors.email = "Email must not exceed 255 characters.";
     }
 
     if (!password) {
       nextErrors.password = "Password is required.";
     } else if (password.length < 8) {
-      nextErrors.password =
-        "Password must be at least 8 characters.";
+      nextErrors.password = "Password must be at least 8 characters.";
     } else if (password.length > 72) {
-      nextErrors.password =
-        "Password must not exceed 72 characters.";
+      nextErrors.password = "Password must not exceed 72 characters.";
     }
 
     if (!confirmPassword) {
-      nextErrors.confirmPassword =
-        "Please confirm your password.";
+      nextErrors.confirmPassword = "Please confirm your password.";
     } else if (password !== confirmPassword) {
-      nextErrors.confirmPassword =
-        "Passwords do not match.";
+      nextErrors.confirmPassword = "Passwords do not match.";
     }
 
     if (!timezone) {
@@ -175,15 +170,11 @@ const Register = () => {
 
       if (!responseData?.success) {
         throw new Error(
-          responseData?.message ||
-            "Unable to create your account."
+          responseData?.message || "Unable to create your account.",
         );
       }
 
-      toast.success(
-        responseData.message ||
-          "Account created successfully!"
-      );
+      toast.success(responseData.message || "Account created successfully!");
 
       setFormData(initialForm);
       setErrors({});
@@ -229,10 +220,7 @@ const Register = () => {
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#020617] text-white">
       {/* Ambient background */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-      >
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div className="absolute -left-40 top-0 h-[28rem] w-[28rem] rounded-full bg-indigo-600/15 blur-3xl" />
 
         <div className="absolute -bottom-40 -right-40 h-[32rem] w-[32rem] rounded-full bg-cyan-500/10 blur-3xl" />
@@ -300,17 +288,12 @@ const Register = () => {
             <div className="max-w-xl">
               <div className="mb-8 flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-indigo-400/20 bg-indigo-500/10 shadow-[0_0_40px_rgba(99,102,241,0.15)]">
-                  <FiStar
-                    size={21}
-                    className="text-indigo-300"
-                  />
+                  <FiStar size={21} className="text-indigo-300" />
                 </div>
 
                 <span className="text-lg font-semibold tracking-tight">
                   Habit
-                  <span className="text-indigo-400">
-                    Flow
-                  </span>
+                  <span className="text-indigo-400">Flow</span>
                 </span>
               </div>
 
@@ -322,8 +305,8 @@ const Register = () => {
               </h1>
 
               <p className="mt-7 max-w-lg text-base leading-7 text-slate-400">
-                Create your personal habit system and turn
-                consistent actions into meaningful progress.
+                Create your personal habit system and turn consistent actions
+                into meaningful progress.
               </p>
 
               <div className="mt-10 space-y-3">
@@ -343,10 +326,7 @@ const Register = () => {
                     className="flex items-center gap-3 text-sm text-slate-400"
                   >
                     <span className="flex h-6 w-6 items-center justify-center rounded-full border border-emerald-400/15 bg-emerald-400/5">
-                      <FiCheck
-                        size={13}
-                        className="text-emerald-400"
-                      />
+                      <FiCheck size={13} className="text-emerald-400" />
                     </span>
 
                     {item}
@@ -390,17 +370,12 @@ const Register = () => {
               <div className="mb-7 lg:hidden">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-indigo-400/20 bg-indigo-500/10">
-                    <FiStar
-                      size={19}
-                      className="text-indigo-300"
-                    />
+                    <FiStar size={19} className="text-indigo-300" />
                   </div>
 
                   <span className="text-lg font-semibold">
                     Habit
-                    <span className="text-indigo-400">
-                      Flow
-                    </span>
+                    <span className="text-indigo-400">Flow</span>
                   </span>
                 </div>
               </div>
@@ -433,20 +408,13 @@ const Register = () => {
                   role="alert"
                   className="mb-5 flex items-start gap-3 rounded-xl border border-red-400/20 bg-red-400/5 px-4 py-3 text-sm text-red-300"
                 >
-                  <FiX
-                    size={17}
-                    className="mt-0.5 shrink-0"
-                  />
+                  <FiX size={17} className="mt-0.5 shrink-0" />
 
                   <span>{serverError}</span>
                 </motion.div>
               )}
 
-              <form
-                onSubmit={handleSubmit}
-                noValidate
-                className="space-y-5"
-              >
+              <form onSubmit={handleSubmit} noValidate className="space-y-5">
                 {/* Email */}
                 <div>
                   <label
@@ -474,9 +442,7 @@ const Register = () => {
                       disabled={isSubmitting}
                       aria-invalid={Boolean(errors.email)}
                       aria-describedby={
-                        errors.email
-                          ? "register-email-error"
-                          : undefined
+                        errors.email ? "register-email-error" : undefined
                       }
                       className={`w-full rounded-xl border bg-white/[0.035] py-3.5 pl-11 pr-4 text-sm text-white outline-none placeholder:text-slate-600 transition duration-200 ${
                         errors.email
@@ -515,9 +481,7 @@ const Register = () => {
                     <input
                       id="register-password"
                       name="password"
-                      type={
-                        showPassword ? "text" : "password"
-                      }
+                      type={showPassword ? "text" : "password"}
                       autoComplete="new-password"
                       value={formData.password}
                       onChange={handleChange}
@@ -525,9 +489,7 @@ const Register = () => {
                       disabled={isSubmitting}
                       aria-invalid={Boolean(errors.password)}
                       aria-describedby={
-                        errors.password
-                          ? "register-password-error"
-                          : undefined
+                        errors.password ? "register-password-error" : undefined
                       }
                       className={`w-full rounded-xl border bg-white/[0.035] py-3.5 pl-11 pr-12 text-sm text-white outline-none placeholder:text-slate-600 transition duration-200 ${
                         errors.password
@@ -538,16 +500,10 @@ const Register = () => {
 
                     <button
                       type="button"
-                      onClick={() =>
-                        setShowPassword(
-                          (current) => !current
-                        )
-                      }
+                      onClick={() => setShowPassword((current) => !current)}
                       disabled={isSubmitting}
                       aria-label={
-                        showPassword
-                          ? "Hide password"
-                          : "Show password"
+                        showPassword ? "Hide password" : "Show password"
                       }
                       className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-lg p-2 text-slate-500 transition hover:bg-white/5 hover:text-slate-200 disabled:opacity-50"
                     >
@@ -571,8 +527,7 @@ const Register = () => {
                           className={`text-[11px] font-medium ${
                             passwordStrength.label === "Strong"
                               ? "text-emerald-400"
-                              : passwordStrength.label ===
-                                  "Good"
+                              : passwordStrength.label === "Good"
                                 ? "text-amber-400"
                                 : "text-red-400"
                           }`}
@@ -582,25 +537,20 @@ const Register = () => {
                       </div>
 
                       <div className="flex gap-1">
-                        {Array.from({ length: 6 }).map(
-                          (_, index) => (
-                            <div
-                              key={index}
-                              className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                                index <
-                                passwordStrength.score
-                                  ? passwordStrength.label ===
-                                    "Strong"
-                                    ? "bg-emerald-400"
-                                    : passwordStrength.label ===
-                                        "Good"
-                                      ? "bg-amber-400"
-                                      : "bg-red-400"
-                                  : "bg-white/10"
-                              }`}
-                            />
-                          )
-                        )}
+                        {Array.from({ length: 6 }).map((_, index) => (
+                          <div
+                            key={index}
+                            className={`h-1 flex-1 rounded-full transition-all duration-300 ${
+                              index < passwordStrength.score
+                                ? passwordStrength.label === "Strong"
+                                  ? "bg-emerald-400"
+                                  : passwordStrength.label === "Good"
+                                    ? "bg-amber-400"
+                                    : "bg-red-400"
+                                : "bg-white/10"
+                            }`}
+                          />
+                        ))}
                       </div>
                     </div>
                   )}
@@ -634,19 +584,13 @@ const Register = () => {
                     <input
                       id="register-confirm-password"
                       name="confirmPassword"
-                      type={
-                        showConfirmPassword
-                          ? "text"
-                          : "password"
-                      }
+                      type={showConfirmPassword ? "text" : "password"}
                       autoComplete="new-password"
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       placeholder="Repeat your password"
                       disabled={isSubmitting}
-                      aria-invalid={Boolean(
-                        errors.confirmPassword
-                      )}
+                      aria-invalid={Boolean(errors.confirmPassword)}
                       aria-describedby={
                         errors.confirmPassword
                           ? "register-confirm-password-error"
@@ -662,9 +606,7 @@ const Register = () => {
                     <button
                       type="button"
                       onClick={() =>
-                        setShowConfirmPassword(
-                          (current) => !current
-                        )
+                        setShowConfirmPassword((current) => !current)
                       }
                       disabled={isSubmitting}
                       aria-label={
@@ -684,8 +626,7 @@ const Register = () => {
 
                   {formData.confirmPassword &&
                     !errors.confirmPassword &&
-                    formData.password ===
-                      formData.confirmPassword && (
+                    formData.password === formData.confirmPassword && (
                       <div className="mt-2 flex items-center gap-1.5 text-xs text-emerald-400">
                         <FiCheck size={13} />
                         Passwords match
@@ -718,14 +659,11 @@ const Register = () => {
                       className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 transition-colors group-focus-within:text-indigo-400"
                     />
 
-                    <input
+                    <select
                       id="register-timezone"
                       name="timezone"
-                      type="text"
-                      autoComplete="off"
                       value={formData.timezone}
                       onChange={handleChange}
-                      placeholder="Asia/Kolkata"
                       disabled={isSubmitting}
                       aria-invalid={Boolean(errors.timezone)}
                       aria-describedby={
@@ -733,12 +671,35 @@ const Register = () => {
                           ? "register-timezone-error"
                           : "register-timezone-help"
                       }
-                      className={`w-full rounded-xl border bg-white/[0.035] py-3.5 pl-11 pr-4 text-sm text-white outline-none placeholder:text-slate-600 transition duration-200 ${
+                      className={`w-full appearance-none rounded-xl border bg-white/[0.035] py-3.5 pl-11 pr-10 text-sm text-white outline-none transition duration-200 ${
                         errors.timezone
                           ? "border-red-400/50 focus:border-red-400"
                           : "border-white/[0.09] focus:border-indigo-400/60 focus:bg-white/[0.05]"
                       } disabled:cursor-not-allowed disabled:opacity-60`}
-                    />
+                    >
+                      <option value="" className="bg-slate-900 text-slate-300">
+                        Select your timezone
+                      </option>
+                      {POPULAR_TIMEZONES.map((zone) => (
+                        <option
+                          key={zone.value}
+                          value={zone.value}
+                          className="bg-slate-900 text-slate-200"
+                        >
+                          {zone.label}
+                        </option>
+                      ))}
+                    </select>
+
+                    <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-500">
+                      <svg
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="h-4 w-4"
+                      >
+                        <path d="M5.25 7.5 10 12.25 14.75 7.5H5.25Z" />
+                      </svg>
+                    </div>
                   </div>
 
                   {errors.timezone ? (
@@ -753,24 +714,15 @@ const Register = () => {
                       id="register-timezone-help"
                       className="mt-2 text-xs leading-5 text-slate-600"
                     >
-                      Used to calculate your daily habit progress
-                      correctly.
+                      Used to calculate your daily habit progress correctly.
                     </p>
                   )}
                 </div>
 
                 {/* Submit */}
                 <motion.button
-                  whileHover={
-                    !isSubmitting
-                      ? { scale: 1.01 }
-                      : undefined
-                  }
-                  whileTap={
-                    !isSubmitting
-                      ? { scale: 0.98 }
-                      : undefined
-                  }
+                  whileHover={!isSubmitting ? { scale: 1.01 } : undefined}
+                  whileTap={!isSubmitting ? { scale: 0.98 } : undefined}
                   type="submit"
                   disabled={isSubmitting}
                   className="group relative mt-2 flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition duration-200 hover:shadow-indigo-500/30 disabled:cursor-not-allowed disabled:opacity-60"
@@ -801,14 +753,10 @@ const Register = () => {
 
               {/* Security */}
               <div className="mt-6 flex items-center gap-2 text-xs text-slate-500">
-                <FiShield
-                  size={15}
-                  className="shrink-0 text-emerald-400/70"
-                />
+                <FiShield size={15} className="shrink-0 text-emerald-400/70" />
 
                 <span>
-                  Your password is securely hashed before being
-                  stored.
+                  Your password is securely hashed before being stored.
                 </span>
               </div>
 

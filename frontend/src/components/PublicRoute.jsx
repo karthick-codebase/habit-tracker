@@ -3,7 +3,7 @@ import { isAuthenticated } from "../utils/auth";
 
 const PublicRoute = () => {
   if (isAuthenticated()) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <Outlet />;
