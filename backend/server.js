@@ -18,7 +18,9 @@ const PORT = process.env.PORT || 5000;
 app.use(helmet());
 
 // Allow frontend to communicate with backend
-app.use(cors());
+if (process.env.NODE_ENV !== "production") {
+  app.use(cors());
+}
 
 // Parse JSON request bodies
 app.use(express.json());
@@ -39,13 +41,14 @@ app.use("/api/habits", checkInRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/analytics", analyticsRoutes);
 
-// Basic test route
-app.get("/", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Habit Tracker API is running",
+// Basic production route
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+  app.get("*splat", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
   });
-});
+}
 
 // Start server
 const startServer = async () => {
