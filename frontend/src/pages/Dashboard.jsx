@@ -11,6 +11,7 @@ import {
   FiRefreshCw,
   FiTarget,
   FiTrendingUp,
+  FiX,
 } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
