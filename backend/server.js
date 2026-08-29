@@ -9,6 +9,7 @@ const habitRoutes = require("./routes/habitRoutes");
 const checkInRoutes = require("./routes/checkInRoutes");
 const userRoutes = require("./routes/userRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
+const path = require("path");
 
 const app = express();
 
