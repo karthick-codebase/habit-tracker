@@ -11,6 +11,11 @@ const User = sequelize.define(
       allowNull: false,
     },
 
+    name: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+    },
+
     email: {
       type: DataTypes.STRING(255),
       allowNull: false,
@@ -30,7 +35,7 @@ const User = sequelize.define(
   {
     tableName: "users",
     timestamps: true,
-  }
+  },
 );
 
 module.exports = User;

@@ -13,30 +13,45 @@ function isValidTimezone(timezone) {
 }
 
 // Zod validation schemas
-const updateProfileSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .email("Please provide a valid email address")
-    .max(255, "Email must not exceed 255 characters")
-    .optional(),
+const updateProfileSchema = z
+  .object({
+    name: z
+      .string()
+      .trim()
+      .min(2, "Name must be at least 2 characters")
+      .max(100, "Name must not exceed 100 characters")
+      .refine((value) => value.replace(/\s+/g, " ").trim().length >= 2, {
+        message: "Name must be at least 2 characters",
+      })
+      .optional(),
 
-  timezone: z
-    .string()
-    .trim()
-    .min(1, "Timezone is required")
-    .max(100, "Timezone is too long")
-    .refine(isValidTimezone, {
-      message: "Please provide a valid IANA timezone",
-    })
-    .optional(),
-}).refine(
-  (data) => data.email !== undefined || data.timezone !== undefined,
-  {
-    message: "At least one field is required to update",
-  }
-);
+    email: z
+      .string()
+      .trim()
+      .toLowerCase()
+      .email("Please provide a valid email address")
+      .max(255, "Email must not exceed 255 characters")
+      .optional(),
+
+    timezone: z
+      .string()
+      .trim()
+      .min(1, "Timezone is required")
+      .max(100, "Timezone is too long")
+      .refine(isValidTimezone, {
+        message: "Please provide a valid IANA timezone",
+      })
+      .optional(),
+  })
+  .refine(
+    (data) =>
+      data.name !== undefined ||
+      data.email !== undefined ||
+      data.timezone !== undefined,
+    {
+      message: "At least one field is required to update",
+    },
+  );
 
 const changePasswordSchema = z.object({
   currentPassword: z
@@ -57,7 +72,7 @@ const changePasswordSchema = z.object({
 const getUserProfile = async (req, res) => {
   try {
     const user = await User.findByPk(req.userId, {
-      attributes: ["id", "email", "timezone", "createdAt"],
+      attributes: ["id", "name", "email", "timezone", "createdAt"],
     });
 
     if (!user) {
@@ -73,6 +88,7 @@ const getUserProfile = async (req, res) => {
       data: {
         user: {
           id: user.id,
+          name: user.name,
           email: user.email,
           timezone: user.timezone,
           createdAt: user.createdAt,
@@ -108,7 +124,7 @@ const updateUserProfile = async (req, res) => {
       });
     }
 
-    const { email, timezone } = result.data;
+    const { name, email, timezone } = result.data;
 
     const user = await User.findByPk(req.userId);
 
@@ -117,6 +133,11 @@ const updateUserProfile = async (req, res) => {
         success: false,
         message: "User account not found",
       });
+    }
+
+    if (name !== undefined) {
+      const normalizedName = name.trim();
+      user.name = normalizedName;
     }
 
     // Check if email is being changed and if it's already taken
@@ -147,6 +168,7 @@ const updateUserProfile = async (req, res) => {
       data: {
         user: {
           id: user.id,
+          name: user.name,
           email: user.email,
           timezone: user.timezone,
           updatedAt: user.updatedAt,
@@ -195,7 +217,7 @@ const changePassword = async (req, res) => {
 
     const passwordMatches = await bcrypt.compare(
       currentPassword,
-      user.password
+      user.password,
     );
 
     if (!passwordMatches) {

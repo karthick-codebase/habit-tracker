@@ -34,6 +34,7 @@ const Settings = () => {
 
   // Profile update form
   const [profileForm, setProfileForm] = useState({
+    name: "",
     email: "",
     timezone: "",
   });
@@ -72,6 +73,7 @@ const Settings = () => {
       const userData = response.data?.data?.user;
       setUserProfile(userData);
       setProfileForm({
+        name: userData.name || "",
         email: userData.email || "",
         timezone: userData.timezone || "",
       });
@@ -97,6 +99,14 @@ const Settings = () => {
   const validateProfile = () => {
     const errors = {};
 
+    if (profileForm.name && profileForm.name.trim().length < 2) {
+      errors.name = "Name must be at least 2 characters";
+    }
+
+    if (profileForm.name && profileForm.name.trim().length > 100) {
+      errors.name = "Name must not exceed 100 characters";
+    }
+
     if (
       profileForm.email &&
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profileForm.email)
@@ -112,7 +122,7 @@ const Settings = () => {
       errors.timezone = "Timezone is too long";
     }
 
-    if (!profileForm.email && !profileForm.timezone) {
+    if (!profileForm.name && !profileForm.email && !profileForm.timezone) {
       errors.form = "Please provide at least one field to update";
     }
 
@@ -131,6 +141,9 @@ const Settings = () => {
       setIsUpdatingProfile(true);
 
       const payload = {};
+      if (profileForm.name && profileForm.name.trim() !== userProfile.name) {
+        payload.name = profileForm.name.trim();
+      }
       if (profileForm.email && profileForm.email !== userProfile.email) {
         payload.email = profileForm.email.trim().toLowerCase();
       }
@@ -160,6 +173,7 @@ const Settings = () => {
       localStorage.setItem("user", JSON.stringify(updatedUser));
 
       setProfileForm({
+        name: updatedUser.name || "",
         email: updatedUser.email,
         timezone: updatedUser.timezone,
       });
@@ -389,6 +403,37 @@ const Settings = () => {
                       </motion.div>
                     )}
                   </AnimatePresence>
+
+                  {/* Full name */}
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-slate-300">
+                      Full name
+                    </label>
+                    <div className="relative">
+                      <FiUser
+                        size={18}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
+                      />
+                      <input
+                        name="name"
+                        type="text"
+                        value={profileForm.name}
+                        onChange={handleProfileChange}
+                        disabled={isUpdatingProfile}
+                        placeholder="Your full name"
+                        className={`w-full rounded-xl border bg-white/[0.035] py-3.5 pl-11 pr-4 text-sm text-white outline-none placeholder:text-slate-600 transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                          profileErrors.name
+                            ? "border-red-400/30 focus:border-red-400"
+                            : "border-white/[0.09] focus:border-indigo-400/60 focus:bg-white/[0.05]"
+                        }`}
+                      />
+                    </div>
+                    {profileErrors.name && (
+                      <p className="mt-2 text-xs text-red-400">
+                        {profileErrors.name}
+                      </p>
+                    )}
+                  </div>
 
                   {/* Email */}
                   <div>

@@ -170,6 +170,12 @@ const Dashboard = () => {
   }, []);
 
   const firstName = useMemo(() => {
+    const providedName = user?.name?.trim();
+
+    if (providedName) {
+      return providedName;
+    }
+
     if (!user?.email) {
       return "there";
     }

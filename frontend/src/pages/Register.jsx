@@ -11,6 +11,7 @@ import {
   FiMail,
   FiShield,
   FiStar,
+  FiUser,
   FiX,
 } from "react-icons/fi";
 import { toast } from "react-hot-toast";
@@ -19,6 +20,7 @@ import api from "../utils/api";
 import { getDefaultTimezone, POPULAR_TIMEZONES } from "../utils/timezones";
 
 const initialForm = {
+  name: "",
   email: "",
   password: "",
   confirmPassword: "",
@@ -107,10 +109,19 @@ const Register = () => {
   const validate = () => {
     const nextErrors = {};
 
+    const name = formData.name.trim();
     const email = formData.email.trim();
     const password = formData.password;
     const confirmPassword = formData.confirmPassword;
     const timezone = formData.timezone.trim();
+
+    if (!name) {
+      nextErrors.name = "Full name is required.";
+    } else if (name.length < 2) {
+      nextErrors.name = "Name must be at least 2 characters.";
+    } else if (name.length > 100) {
+      nextErrors.name = "Name must not exceed 100 characters.";
+    }
 
     if (!email) {
       nextErrors.email = "Email address is required.";
@@ -161,6 +172,7 @@ const Register = () => {
       setIsSubmitting(true);
 
       const response = await api.post("/auth/register", {
+        name: formData.name.trim(),
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
         timezone: formData.timezone.trim(),
@@ -415,6 +427,53 @@ const Register = () => {
               )}
 
               <form onSubmit={handleSubmit} noValidate className="space-y-5">
+                {/* Full name */}
+                <div>
+                  <label
+                    htmlFor="register-name"
+                    className="mb-2 block text-sm font-medium text-slate-200"
+                  >
+                    Full name
+                  </label>
+
+                  <div className="group relative">
+                    <FiUser
+                      aria-hidden="true"
+                      size={18}
+                      className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 transition-colors group-focus-within:text-indigo-400"
+                    />
+
+                    <input
+                      id="register-name"
+                      name="name"
+                      type="text"
+                      autoComplete="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="Your full name"
+                      disabled={isSubmitting}
+                      aria-invalid={Boolean(errors.name)}
+                      aria-describedby={
+                        errors.name ? "register-name-error" : undefined
+                      }
+                      className={`w-full rounded-xl border bg-white/[0.035] py-3.5 pl-11 pr-4 text-sm text-white outline-none placeholder:text-slate-600 transition duration-200 ${
+                        errors.name
+                          ? "border-red-400/50 focus:border-red-400"
+                          : "border-white/[0.09] focus:border-indigo-400/60 focus:bg-white/[0.05]"
+                      } disabled:cursor-not-allowed disabled:opacity-60`}
+                    />
+                  </div>
+
+                  {errors.name && (
+                    <p
+                      id="register-name-error"
+                      className="mt-2 text-xs text-red-400"
+                    >
+                      {errors.name}
+                    </p>
+                  )}
+                </div>
+
                 {/* Email */}
                 <div>
                   <label

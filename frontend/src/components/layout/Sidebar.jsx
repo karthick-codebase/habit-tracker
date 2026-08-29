@@ -80,7 +80,7 @@ const Sidebar = ({ currentPage, user, onNavigate, onLogout }) => {
         <div className="mt-auto">
           <div className="mb-4 rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4">
             <p className="truncate text-sm font-medium text-slate-200">
-              {user?.email || "User"}
+              {user?.name || user?.email || "User"}
             </p>
             <p className="mt-1 text-[11px] font-medium tracking-[0.12em] text-slate-400 uppercase">
               {formatTimezoneLabel(user?.timezone)}

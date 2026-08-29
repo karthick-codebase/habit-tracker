@@ -15,6 +15,15 @@ function isValidTimezone(timezone) {
 
 // Zod validation schema
 const registerSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name must not exceed 100 characters")
+    .refine((value) => value.replace(/\s+/g, " ").trim().length >= 2, {
+      message: "Name must be at least 2 characters",
+    }),
+
   email: z
     .string()
     .trim()
@@ -67,7 +76,7 @@ const register = async (req, res) => {
       });
     }
 
-    const { email, password, timezone } = result.data;
+    const { name, email, password, timezone } = result.data;
 
     // Check if user already exists
     const existingUser = await User.findOne({
@@ -86,6 +95,7 @@ const register = async (req, res) => {
 
     // Persist new user to the database
     const user = await User.create({
+      name,
       email,
       password: hashedPassword,
       timezone,
@@ -97,6 +107,7 @@ const register = async (req, res) => {
       data: {
         user: {
           id: user.id,
+          name: user.name,
           email: user.email,
           timezone: user.timezone,
           createdAt: user.createdAt,
@@ -141,10 +152,7 @@ const login = async (req, res) => {
       });
     }
 
-    const passwordMatches = await bcrypt.compare(
-      password,
-      user.password
-    );
+    const passwordMatches = await bcrypt.compare(password, user.password);
 
     if (!passwordMatches) {
       return res.status(401).json({
@@ -160,7 +168,7 @@ const login = async (req, res) => {
       process.env.JWT_SECRET,
       {
         expiresIn: "7d",
-      }
+      },
     );
 
     return res.status(200).json({
@@ -170,6 +178,7 @@ const login = async (req, res) => {
         token,
         user: {
           id: user.id,
+          name: user.name,
           email: user.email,
           timezone: user.timezone,
         },
@@ -186,5 +195,6 @@ const login = async (req, res) => {
 };
 
 module.exports = {
-  register,login
+  register,
+  login,
 };
