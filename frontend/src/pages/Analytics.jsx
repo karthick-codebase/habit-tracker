@@ -6,7 +6,11 @@ import {
   FiCheckCircle,
   FiLoader,
   FiLogOut,
+  FiMenu,
+  FiTarget,
   FiTrendingUp,
+  FiUser,
+  FiX,
 } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -20,9 +24,27 @@ const Analytics = () => {
   const user = getUser();
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [overview, setOverview] = useState(null);
   const [habitStats, setHabitStats] = useState([]);
   const [dailyTrends, setDailyTrends] = useState([]);
+
+  const mobileNavItems = [
+    {
+      id: "dashboard",
+      label: "Dashboard",
+      icon: FiActivity,
+      path: "/dashboard",
+    },
+    { id: "habits", label: "Habits", icon: FiTarget, path: "/habits" },
+    {
+      id: "analytics",
+      label: "Analytics",
+      icon: FiTrendingUp,
+      path: "/analytics",
+    },
+    { id: "settings", label: "Settings", icon: FiUser, path: "/settings" },
+  ];
 
   useEffect(() => {
     fetchAnalytics();
@@ -63,6 +85,16 @@ const Analytics = () => {
     navigate("/login", { replace: true });
   };
 
+  const handleMobileNavigate = (path) => {
+    navigate(path);
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleLogoClick = () => {
+    navigate("/dashboard");
+    setIsMobileMenuOpen(false);
+  };
+
   if (isLoading) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-[#020617] text-white">
@@ -99,7 +131,11 @@ const Analytics = () => {
           {/* Mobile Header */}
           <header className="sticky top-0 z-30 border-b border-white/[0.07] bg-slate-950/80 px-4 py-4 backdrop-blur-xl lg:hidden">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleLogoClick}
+                className="flex items-center gap-3"
+              >
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/10">
                   <FiTrendingUp size={18} className="text-indigo-300" />
                 </div>
@@ -107,14 +143,52 @@ const Analytics = () => {
                   Habit
                   <span className="text-indigo-400">Flow</span>
                 </span>
-              </div>
+              </button>
               <button
-                onClick={handleLogout}
+                type="button"
+                onClick={() => setIsMobileMenuOpen((current) => !current)}
                 className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-2.5 text-slate-300"
+                aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
               >
-                <FiLogOut size={20} />
+                {isMobileMenuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
               </button>
             </div>
+
+            {isMobileMenuOpen && (
+              <div className="mt-4 border-t border-white/[0.07] pt-4">
+                <div className="space-y-1">
+                  {mobileNavItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = item.path === "/analytics";
+
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => handleMobileNavigate(item.path)}
+                        className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm ${
+                          isActive
+                            ? "bg-indigo-500/10 text-indigo-300"
+                            : "text-slate-400 hover:bg-white/[0.03]"
+                        }`}
+                      >
+                        <Icon size={17} />
+                        {item.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-slate-400 hover:bg-white/[0.03]"
+                >
+                  <FiLogOut size={17} />
+                  Sign out
+                </button>
+              </div>
+            )}
           </header>
 
           <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">

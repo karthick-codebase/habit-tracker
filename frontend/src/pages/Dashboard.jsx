@@ -38,6 +38,23 @@ const Dashboard = () => {
   const [error, setError] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCreateHabitOpen, setIsCreateHabitOpen] = useState(false);
+
+  const mobileNavItems = [
+    {
+      id: "dashboard",
+      label: "Dashboard",
+      icon: FiActivity,
+      path: "/dashboard",
+    },
+    { id: "habits", label: "Habits", icon: FiTarget, path: "/habits" },
+    {
+      id: "analytics",
+      label: "Analytics",
+      icon: FiTrendingUp,
+      path: "/analytics",
+    },
+    { id: "settings", label: "Settings", icon: FiActivity, path: "/settings" },
+  ];
   const [isEditHabitOpen, setIsEditHabitOpen] = useState(false);
   const [selectedHabit, setSelectedHabit] = useState(null);
   const [isDeleteHabitOpen, setIsDeleteHabitOpen] = useState(false);
@@ -225,6 +242,16 @@ const Dashboard = () => {
     });
   };
 
+  const handleMobileNavigate = (path) => {
+    navigate(path);
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleLogoClick = () => {
+    navigate("/dashboard");
+    setIsMobileMenuOpen(false);
+  };
+
   const handleRefresh = () => {
     fetchDashboardData(false);
   };
@@ -389,7 +416,11 @@ const Dashboard = () => {
           {/* Mobile header */}
           <header className="sticky top-0 z-30 border-b border-white/[0.07] bg-slate-950/80 px-4 py-4 backdrop-blur-xl lg:hidden">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleLogoClick}
+                className="flex items-center gap-3"
+              >
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/10">
                   <FiActivity size={18} className="text-indigo-300" />
                 </div>
@@ -398,7 +429,7 @@ const Dashboard = () => {
                   Habit
                   <span className="text-indigo-400">Flow</span>
                 </span>
-              </div>
+              </button>
 
               <button
                 type="button"
@@ -428,10 +459,33 @@ const Dashboard = () => {
                   className="overflow-hidden"
                 >
                   <div className="mt-4 border-t border-white/[0.07] pt-4">
+                    <div className="space-y-1">
+                      {mobileNavItems.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = item.path === "/dashboard";
+
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => handleMobileNavigate(item.path)}
+                            className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm ${
+                              isActive
+                                ? "bg-indigo-500/10 text-indigo-300"
+                                : "text-slate-400 hover:bg-white/[0.03]"
+                            }`}
+                          >
+                            <Icon size={17} />
+                            {item.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-slate-400 hover:bg-white/[0.03]"
+                      className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-slate-400 hover:bg-white/[0.03]"
                     >
                       <FiLogOut size={17} />
                       Sign out
